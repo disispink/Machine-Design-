@@ -1,0 +1,47 @@
+%Design of brakes 
+%Name: Sailesh Bastola Roll: THA076BME035
+T = 2500;                  %  Braking Torque
+f = 0.41;                  % Coefficient of friction of Asbestos 
+r = 0.0350;                % Radius of the drum.
+c = 0.110;                 % Distance between hinge and actuating force.
+theta_a = pi/2;            % Maximum pressure angle.
+b = [20:5:50]./1000;       % brake width range 20mm to 50mm
+a=0.04;                    % distnace between the pivot point and center
+%Angle subtended by brake fiction lining.
+theta_1 = 0;
+theta_2 = (110*pi)/180;
+syms t
+Normal = (sin(t))^2;
+intgN = int(Normal, theta_1, theta_2);
+
+Mn = zeros(length(b),1);
+Mf = zeros(length(b),1);
+self_check = zeros(length(b),1);
+F = zeros(length(b),1);
+
+pa=1000000;
+
+
+for i = 1:length(b)
+    fric = sin(t)*((r -(a* cos(t))));
+    intfric = int(fric, theta_1, theta_2);
+   
+    Mn(i) = ((pa* b(i)* r * a)*intgN);
+    Mf(i) = ((pa* b(i)* r * f)* intfric);
+    if Mn(i) > Mf(i)
+        self_check(i) = 1;
+    end
+    
+    F(i) = (Mn(i) - Mf(i))/c;
+    
+end
+fprintf('Facewidth (b)\t\t\t\t\t\t\tMn\t\t\t\t\tMf\t\t\t\tSL\t\t\t\t\tF\n');
+fprintf('--------------------------------------------------------------------------------------------------------\n');
+for i = 1:length(b)
+    fprintf(' %.4f\t\t\t\t\t%.3f\t\t\t%.3f\t\t%d\t\t\t\t%.2f\n', b(i),...
+        Mn(i), Mf(i), self_check(i), F(i))
+end
+fprintf('here SL=1 is non self locking');
+
+
+fprintf('\n')
